@@ -8,8 +8,6 @@
 int _printf(const char *format, ...)
 {
 	int count = 0;
-	char buffer[20];
-	int num,i;
 	va_list args;
 
 	va_start(args, format);
@@ -27,37 +25,28 @@ int _printf(const char *format, ...)
 					break;
 
 				case 's':
-				{
-					const char *str = va_arg(args, const char *);
-					while (*str)
 					{
-						putchar(*str);
-						str++;
-						count++;
+						const char *str = va_arg(args, const char *);
+						count += fputs(str, stdout);
+						break;
 					}
-					break;
-				}
+
 				case '%':
 					putchar('%');
 					count++;
 					break;
-					case 'd': case 'i': {
-                    
-                    num = va_arg(args, int);
-                    sprintf(buffer, "%d", num);
-                    for (i = 0; buffer[i] != '\0'; i++) {
-                        putchar(buffer[i]);
-                        count++;
-                    }
-                    break;
-                }
-                		default:
+
+				case 'd':
+				case 'i':
+					count += printf("%d", va_arg(args, int));
+					break;
+
+				default:
 					putchar('%');
 					putchar(*format);
 					count += 2;
 					break;
 			}
-	
 		}
 		else
 		{
@@ -66,9 +55,8 @@ int _printf(const char *format, ...)
 		}
 
 		format++;
-    }
+	}
 
 	va_end(args);
 	return count;
 }
-
