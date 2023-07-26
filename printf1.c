@@ -27,19 +27,18 @@ int _printf(const char *format, ...)
 				case 's':
 					{
 						const char *str = va_arg(args, const char *);
-						while (*str)
-						{
-							putchar(*str);
-							str++;
-							count++;
-						}
-
+						count += fputs(str, stdout);
 						break;
 					}
 
 				case '%':
 					putchar('%');
 					count++;
+					break;
+
+				case 'd':
+				case 'i':
+					count += printf("%d", va_arg(args, int));
 					break;
 
 				default:
@@ -61,4 +60,3 @@ int _printf(const char *format, ...)
 	va_end(args);
 	return count;
 }
-
