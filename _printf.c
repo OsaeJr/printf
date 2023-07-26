@@ -1,45 +1,98 @@
 #include "main.h"
 /**
- * _printf - is a function that selects the correct function to print.
- * @format: identifier to look for.
- * Return: the length of the string.
- */
-int _printf(const char * const format, ...)
+*call_sp - fun that get the fun and call it and check
+*for signs
+*@format: the str format
+*@i: pointer to the index of our format
+*@p: pointer to out struct
+*@pCount: pointer to our counter
+*@pa:pointer to our arguments
+*/
+void call_sp(const char *format, int *i, struct sp_char *p,
+int *pCount, va_list pa)
 {
-	convert_match m[] = {
-		{"%s", printf_string}, {"%c", printf_char},
-		{"%%", printf_37},
-		{"%i", printf_int}, {"%d", printf_dec}, {"%r", printf_srev},
-		{"%R", printf_rot13}, {"%b", printf_bin}, {"%u", printf_unsigned},
-		{"%o", printf_oct}, {"%x", printf_hex}, {"%X", printf_HEX},
-		{"%S", printf_exclusive_string}, {"%p", printf_pointer}
-	};
+	int j, k = 3;
+	va_list ap; /* to copy the pa */
+	int index = *i;
+	int flagg = 0;
+	sign flag[] = {{'+', postive_sign}, {' ', space_sign}, {'#', window_sign},
+		{'\0', NULL}};
 
-	va_list args;
-	int i = 0, j, len = 0;
+	va_copy(ap, pa); /* copy the list of the arguments */
+	while (signIndex(format[index], flag) != -1)
+	{
+		for (k = 0; flag[k].ch != '\0'; k++)/* if there are flags */
+		{
+			if (format[index] == flag[k].ch)
+			{
+				if (format[index] == '+' && flagg < 2)
+					flagg = 1;
+				else if (format[index] == '#')
+					flagg = 2;
+				index++;
+				break;
+			}
+		}
+	}
+	j = spIndex(format[index], p);/* get the index of the sp */
+	if (j != -1) /* make sure it match */
+	{
+		if (flag[k].ch != '\0')
+			flag[k].fun(flagg, flag[k].ch, j, ap, pCount);/* print flag */
+		p[j].fun(pa, pCount); /*print the argument  */
+		*i = index;
+	}
+	else
+	{
+		_putchar('%');
+		(*i)--;
+		*pCount += 1;
+		return;
+	}
+}
 
-	va_start(args, format);
+
+/**
+*_printf - fun that do same as printf
+*@format: the string format
+*Return: num of charchter printed
+*/
+int _printf(const char *format, ...)
+{
+	va_list pa; /* points to the arguments list */
+	int i, count = 0;
+	int *pCount = &count;
+	spChar type[] = {
+		{'s', print_str}, {'c', print_ch}, {'d', print_int},
+		{'i', print_int}, {'b', print_bi}, {'r', print_rev},
+		{'u', print_unsigned}, {'o', print_octal}, {'S', print_nonch},
+		{'x', print_lowerhex}, {'X', print_upperhex}, {'R', print_rot13},
+		{'p', print_addr}, {'\0', NULL}};
+
 	if (format == NULL || (format[0] == '%' && format[1] == '\0'))
 		return (-1);
 
-Here:
-	while (format[i] != '\0')
+	va_start(pa, format);
+	for (i = 0; format[i] != '\0'; i++)
 	{
-		j = 13;
-		while (j >= 0)
+		if (format[i] != '%')
 		{
-			if (m[j].id[0] == format[i] && m[j].id[1] == format[i + 1])
-			{
-				len += m[j].f(args);
-				i = i + 2;
-				goto Here;
-			}
-			j--;
+			_putchar(format[i]); /* print the char */
+			*pCount += 1;
 		}
-		_putchar(format[i]);
-		len++;
-		i++;
+		else if (format[i] == '%' && format[i + 1] != '%')
+		{
+			i++;/* get the char after the % */
+			call_sp(format, &i, type, pCount, pa);
+
+		}
+		else if (format[i] == '%' && format[i + 1] == '%')
+		{
+			i++;
+			_putchar(format[i]);
+			*pCount += 1;
+		}
 	}
-	va_end(args);
-	return (len);
+	va_end(pa);
+	return (count);
 }

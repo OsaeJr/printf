@@ -1,49 +1,74 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <stdio.h>
+#include <stdarg.h> /* for varidic funs */
+#include <unistd.h>/* for write fun  */
 #include <stdlib.h>
-#include <stdarg.h>
-#include <limits.h>
-#include <unistd.h>
-
-
+#include <stdio.h>
+/**
+* struct sp_char - sturct for the special character
+*@ch: symbole of the speacial character
+*@fun: pointer to fun to print the argurment
+*/
+typedef struct sp_char
+{
+	char ch;
+	int (*fun)(va_list, int *);
+} spChar;
 
 /**
- * struct format - match the conversion specifiers for printf
- * @id: type char pointer of the specifier i.e (l, h) for (d, i, u, o, x, X)
- * @f: type pointer to function for the conversion specifier
- *
- */
-
-typedef struct format
+*struct signs - sturct for the special character
+*@ch: symbole of the signs
+*@fun: pointer to fun to print sign
+*/
+typedef struct signs
 {
-	char *id;
-	int (*f)();
-} convert_match;
+	char ch;
+	void (*fun)(int, char, int, va_list, int *);
+} sign;
 
-int printf_pointer(va_list val);
-int printf_hex_aux(unsigned long int num);
-int printf_HEX_aux(unsigned int num);
-int printf_exclusive_string(va_list val);
-int printf_HEX(va_list val);
-int printf_hex(va_list val);
-int printf_oct(va_list val);
-int printf_unsigned(va_list args);
-int printf_bin(va_list val);
-int printf_srev(va_list args);
-int printf_rot13(va_list args);
-int printf_int(va_list args);
-int printf_dec(va_list args);
 int _strlen(char *s);
-int *_strcpy(char *dest, char *src);
-int _strlenc(const char *s);
-int rev_string(char *s);
-int _strlenc(const char *s);
-int printf_37(void);
-int printf_char(va_list val);
-int printf_string(va_list val);
-int _putchar(char c);
 int _printf(const char *format, ...);
+
+int spIndex(char ch, struct sp_char *p);
+
+int signIndex(char ch, struct signs *p);
+
+int _putchar(char sp_ch);
+
+int _putstr(char *str, int len);
+
+void _putInt(unsigned int num, int *pCount);
+
+int print_str(va_list pa, int *pCount);
+
+int print_ch(va_list pa, int *pCount);
+
+int print_int(va_list pa, int *pCount);
+
+int print_bi(va_list pa, int *pCount);
+
+int print_rev(va_list pa, int *pCount);
+
+int print_unsigned(va_list pa, int *pCount);
+
+int print_octal(va_list pa, int *pCount);
+
+int print_lowerhex(va_list pa, int *pCount);
+
+int print_upperhex(va_list pa, int *pCount);
+
+int print_nonch(va_list pa, int *pCount);
+
+int print_rot13(va_list pa, int *pCount);
+
+int print_addr(va_list pa, int *pCount);
+
+void postive_sign(int flag, char ch, int j, va_list ap, int *pCount);
+
+void space_sign(int flag, char ch, int j, va_list ap, int *pCount);
+
+void window_sign(int flag, char ch, int j, va_list ap, int *pCount);
+
 
 #endif
